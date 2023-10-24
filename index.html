@@ -9,44 +9,152 @@
         body {
             font-family: Arial, sans-serif;
             display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
             height: 100vh;
             margin: 0;
         }
 
-        #slider-container {
-            width: 80%;
-            max-width: 300px;
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 50%;
+            height: 100%;
+        }
+
+        .input-container {
+            margin-bottom: 20px;
             text-align: center;
         }
 
-        #slider {
-            width: 100%;
+        .input-container label {
+            display: block;
+            margin-bottom: 5px;
         }
 
-        #selected-value {
+        .slider-container {
+            width: 100%;
+            text-align: center;
+        }
+
+        .slider-container label {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .slider-container input {
+            width: 80%;
+            margin: 0 auto;
+        }
+
+        .output-container {
             margin-top: 20px;
+            text-align: center;
         }
     </style>
 </head>
 
 <body>
-    <div id="slider-container">
-        <label for="slider">Choose a value between 1 and 20:</label>
-        <input type="range" id="slider" min="1" max="20" value="1">
-        <div id="selected-value">Selected Value: <span id="value">1</span></div>
+    <div class="container">
+        <div class="input-container">
+            <label for="input1">DPI</label>
+            <input type="number" id="input1">
+        </div>
+        <div class="input-container">
+            <label for="input2">Sensitivity (from options.txt)</label>
+            <input type="number" id="input2">
+        </div>
+        <div class="slider-container">
+            <label for="slider">Cursor Speed:</label>
+            <input type="range" id="slider" min="1" max="20" value="10" step="1">
+            <div id="selected-value">Selected Value: <span id="value">10</span></div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="output-container">
+            <label>New DPI:</label>
+            <output id="newDPI">0</output>
+        </div>
+        <div class="output-container">
+            <label>New Sensitivity:</label>
+            <output id="newSens">0</output>
+        </div>
+        <div class="output-container">
+            <label>New Cursor Speed:</label>
+            <output id="newCursorSpeed">0</output>
+        </div>
     </div>
 
     <script>
+        const input1 = document.getElementById("input1");
+        const input2 = document.getElementById("input2");
         const slider = document.getElementById("slider");
         const selectedValue = document.getElementById("value");
+        const newDPIOutput = document.getElementById("newDPI");
+        const newSensOutput = document.getElementById("newSens");
+        const newCursorSpeedOutput = document.getElementById("newCursorSpeed");		
+		
+		const cursorSpeedMultipliers = [0.03125, 0.0625, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1, 1.25, 1.5, 1.75, 2, 2.25, 2.5, 2.75, 3, 3.25, 3.25, 3.5]
 
+		input2.addEventListener("input", function() {
+			if (parseFloat(input2.value) > 1) {
+				input2.value = "1";
+			}
+			updateOutputs();
+		});
+		input1.addEventListener("input", function() {
+			if (parseFloat(input1.value) < 0) {
+				input1.value = "0";
+			}
+			updateOutputs();
+		});		
+		
+		input2.addEventListener("input", function() {
+			if (parseFloat(input2.value) < 0) {
+				input2.value = "0";
+			}
+			updateOutputs();
+		});		
+		
+		
+		
+        function updateOutputs() {
+            const inputValue1 = parseFloat(input1.value) || 0;
+            const inputValue2 = parseFloat(input2.value) || 0;
+            const sliderValue = parseFloat(slider.value) || 0;
+			let newDPI, newSens, newCursorSpeed; // Declare variables here
+
+			for (let i = 0; i < 20; i++) {
+				newDPI = inputValue1 / (cursorSpeedMultipliers[i] / cursorSpeedMultipliers[sliderValue - 1]);
+				const originalSensMultiplier = ((inputValue2 * 0.6 + 0.2) ** 3) * 8;
+				const newSensMultiplier = originalSensMultiplier * (cursorSpeedMultipliers[i] / cursorSpeedMultipliers[sliderValue - 1]);
+				newSens = (((newSensMultiplier / 8) ** (1 / 3)) - 0.2) / 0.6;
+				newCursorSpeed = i + 1;
+				if (newSens > 0) {
+					break;
+				}
+			}
+
+			newDPIOutput.textContent = newDPI.toFixed(0);
+			newSensOutput.textContent = newSens.toFixed(6);
+			newCursorSpeedOutput.textContent = newCursorSpeed.toFixed(0);
+        }
+
+        input1.addEventListener("input", updateOutputs);
+        input2.addEventListener("input", updateOutputs);
+		
         slider.addEventListener("input", function() {
             const value = slider.value;
             selectedValue.textContent = value;
+            updateOutputs();
         });
+
+        // Set default values
+        input1.value = "";
+        input2.value = "";
+        slider.value = 10;
+        selectedValue.textContent = "10";
+        updateOutputs();
     </script>
 </body>
 
