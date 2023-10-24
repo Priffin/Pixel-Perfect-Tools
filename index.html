@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sens Calc</title>
+    <title>Sliding Bar Example</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -83,6 +83,10 @@
             <label>New Cursor Speed:</label>
             <output id="newCursorSpeed">0</output>
         </div>
+		<div class="output-container">
+            <label>Estimated pixel skipping:</label>
+            <output id="pixelSkipping">0</output>
+        </div>
     </div>
 
     <script>
@@ -93,6 +97,7 @@
         const newDPIOutput = document.getElementById("newDPI");
         const newSensOutput = document.getElementById("newSens");
         const newCursorSpeedOutput = document.getElementById("newCursorSpeed");		
+		const pixelSkippingOutput = document.getElementById("pixelSkipping");
 		
 		const cursorSpeedMultipliers = [0.03125, 0.0625, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1, 1.25, 1.5, 1.75, 2, 2.25, 2.5, 2.75, 3, 3.25, 3.25, 3.5]
 
@@ -118,16 +123,17 @@
 		
 		
 		
-        function updateOutputs() {
-            const inputValue1 = parseFloat(input1.value) || 0;
-            const inputValue2 = parseFloat(input2.value) || 0;
-            const sliderValue = parseFloat(slider.value) || 0;
-			let newDPI, newSens, newCursorSpeed; // Declare variables here
+		function updateOutputs() {
+			const inputValue1 = parseFloat(input1.value) || 0;
+			const inputValue2 = parseFloat(input2.value) || 0;
+			const sliderValue = parseFloat(slider.value) || 0;
+			let newDPI, newSens, newCursorSpeed, pixelSkipping; // Declare variables here
 
 			for (let i = 0; i < 20; i++) {
 				newDPI = inputValue1 / (cursorSpeedMultipliers[i] / cursorSpeedMultipliers[sliderValue - 1]);
 				const originalSensMultiplier = ((inputValue2 * 0.6 + 0.2) ** 3) * 8;
 				const newSensMultiplier = originalSensMultiplier * (cursorSpeedMultipliers[i] / cursorSpeedMultipliers[sliderValue - 1]);
+				pixelSkipping = (16384 * newSensMultiplier * 0.15) / 30;
 				newSens = (((newSensMultiplier / 8) ** (1 / 3)) - 0.2) / 0.6;
 				newCursorSpeed = i + 1;
 				if (newSens > 0) {
@@ -138,7 +144,8 @@
 			newDPIOutput.textContent = newDPI.toFixed(0);
 			newSensOutput.textContent = newSens.toFixed(6);
 			newCursorSpeedOutput.textContent = newCursorSpeed.toFixed(0);
-        }
+			pixelSkippingOutput.textContent = pixelSkipping.toFixed(0);
+		}
 
         input1.addEventListener("input", updateOutputs);
         input2.addEventListener("input", updateOutputs);
