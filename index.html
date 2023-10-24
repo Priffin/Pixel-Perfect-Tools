@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sliding Bar Example</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        #slider-container {
+            width: 80%;
+            max-width: 300px;
+            text-align: center;
+        }
+
+        #slider {
+            width: 100%;
+        }
+
+        #selected-value {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="slider-container">
+        <label for="slider">Choose a value between 1 and 20:</label>
+        <input type="range" id="slider" min="1" max="20" value="1">
+        <div id="selected-value">Selected Value: <span id="value">1</span></div>
+    </div>
+
+    <script>
+        const slider = document.getElementById("slider");
+        const selectedValue = document.getElementById("value");
+
+        slider.addEventListener("input", function() {
+            const value = slider.value;
+            selectedValue.textContent = value;
+        });
+    </script>
+</body>
+
+</html>
