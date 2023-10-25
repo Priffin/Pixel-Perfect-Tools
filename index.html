@@ -5,12 +5,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sliding Bar Example</title>
-    <style>
+ <style>
+        /* General styles */
         body {
             font-family: Arial, sans-serif;
             display: flex;
             height: 100vh;
             margin: 0;
+            background-color: #343541;
+            color: white;
+            font-size: 2em;
+            align-items: center;
+            justify-content: center;
         }
 
         .container {
@@ -22,16 +28,35 @@
             height: 100%;
         }
 
+        /* Centering input boxes and labels */
         .input-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             margin-bottom: 20px;
             text-align: center;
         }
 
         .input-container label {
-            display: block;
             margin-bottom: 5px;
         }
 
+        /* Styles for input boxes */
+        input[type="number"] {
+            -webkit-appearance: none;
+            -moz-appearance: textfield;
+            appearance: textfield;
+            width: 80%;
+            padding: 0.5em;
+            font-size: 1em;
+            border: 1px solid white;
+            border-radius: 5px;
+            color: black;
+            background-color: white;
+            margin: 0 auto;
+        }
+
+        /* Rest of the styles remain unchanged */
         .slider-container {
             width: 100%;
             text-align: center;
@@ -51,6 +76,14 @@
             margin-top: 20px;
             text-align: center;
         }
+		.d1 {
+			color: red;
+			font-size: 0.5em;
+		}
+		.d2 {
+			color: green;
+			font-size: 0.5em;
+		}
     </style>
 </head>
 
@@ -101,6 +134,20 @@
 		
 		const cursorSpeedMultipliers = [0.03125, 0.0625, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1, 1.25, 1.5, 1.75, 2, 2.25, 2.5, 2.75, 3, 3.25, 3.25, 3.5]
 
+		async function getSensFromList() {
+			try {
+				const response = await fetch('https://raw.githubusercontent.com/Sharpieman20/Scratchpad/master/No_Error_Angles.txt');
+				const data = await response.text();
+				// Split the data into lines and extract the first word from each line
+				const list = data.split('\n').map(line => line.trim().split(' ')[0]);
+				return list;
+			} catch (error) {
+				console.error('Error fetching the text file:', error);
+				return [];
+			}
+		}
+
+
 		input2.addEventListener("input", function() {
 			if (parseFloat(input2.value) > 1) {
 				input2.value = "1";
@@ -123,32 +170,59 @@
 		
 		
 		
-		function updateOutputs() {
+		async function updateOutputs() {
 			const inputValue1 = parseFloat(input1.value) || 0;
 			const inputValue2 = parseFloat(input2.value) || 0;
 			const sliderValue = parseFloat(slider.value) || 0;
-			let newDPI, newSens, newCursorSpeed, pixelSkipping; // Declare variables here
+			let newDPI = "";
+			let newSens = "";
+			let newCursorSpeed = "";
+			let pixelSkipping = "";
 
-			for (let i = 0; i < 20; i++) {
-				newDPI = inputValue1 / (cursorSpeedMultipliers[i] / cursorSpeedMultipliers[sliderValue - 1]);
-				const originalSensMultiplier = ((inputValue2 * 0.6 + 0.2) ** 3) * 8;
-				const newSensMultiplier = originalSensMultiplier * (cursorSpeedMultipliers[i] / cursorSpeedMultipliers[sliderValue - 1]);
-				pixelSkipping = (16384 * newSensMultiplier * 0.15) / 30;
-				newSens = (((newSensMultiplier / 8) ** (1 / 3)) - 0.2) / 0.6;
-				newCursorSpeed = i + 1;
-				if (newSens > 0) {
-					break;
+			if (inputValue1 > 0 && inputValue2 > 0) {
+				let noErrorSens = await getSensFromList();
+				let d1, d2;
+
+				for (let i = 0; i < 20; i++) {
+					newDPI = inputValue1 / (cursorSpeedMultipliers[i] / cursorSpeedMultipliers[sliderValue - 1]);
+					const originalSensMultiplier = ((inputValue2 * 0.6 + 0.2) ** 3) * 8;
+					const newSensMultiplier = originalSensMultiplier * (cursorSpeedMultipliers[i] / cursorSpeedMultipliers[sliderValue - 1]);
+					pixelSkipping = (16384 * newSensMultiplier * 0.15) / 30;
+					newSens = (((newSensMultiplier / 8) ** (1 / 3)) - 0.2) / 0.6;
+					newCursorSpeed = i + 1;
+					if (newSens > 0) {
+						break;
+					}
+				}
+				for (let i = 0; i < 905; i++) {
+					d1 = newSens - noErrorSens[i];
+					d2 = newSens - noErrorSens[i + 1];
+					if (d1 * d2 < 0) {
+						newSens =
+                        "<br>" +
+                        noErrorSens[i].toString() +
+                        "<span class='d1'> (" +
+                        -d1.toPrecision(1) +
+                        ")</span><br> or <br>" +
+                        noErrorSens[i + 1].toString() +
+                        "<span class='d2'> (+" +
+                        -d2.toPrecision(1) +
+                        ")</span>";
+                    break;
+						break;
+					}
 				}
 			}
 
-			newDPIOutput.textContent = newDPI.toFixed(0);
-			newSensOutput.textContent = newSens.toFixed(6);
-			newCursorSpeedOutput.textContent = newCursorSpeed.toFixed(0);
-			pixelSkippingOutput.textContent = pixelSkipping.toFixed(0);
+			newDPIOutput.textContent = newDPI ? newDPI.toFixed(0) : "";
+			newSensOutput.innerHTML = newSens ? newSens : "";
+			newCursorSpeedOutput.textContent = newCursorSpeed ? newCursorSpeed.toFixed(0) : "";
+			pixelSkippingOutput.textContent = pixelSkipping ? pixelSkipping.toFixed(0) : "";
 		}
 
         input1.addEventListener("input", updateOutputs);
         input2.addEventListener("input", updateOutputs);
+		
 		
         slider.addEventListener("input", function() {
             const value = slider.value;
