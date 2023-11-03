@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Generator</title>
+    <style>
+        body {
+			font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: row;
+            background-color: #24252e; /* Set background color to #24252e */
+            color: #ffffff; /* Set text color to white */
+			font-size:24px;
+        }
+
+        .left-panel {
+            flex: 3;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+			justify-content: space-between;
+			height: 800px;
+        }
+
+        .right-panel {
+            flex: 7;
+            padding: 20px;
+			height: 600px;
+        }
+		
+		.transform {
+			padding-top: 20px;
+			max-height:200px;
+		}
+
+        #canvas {
+            border: 3px solid black;
+            width: 100%;
+            height: 100%;
+        }
+        .input-group {
+            margin-bottom: 10px;
+        }
+		
+		input[type="number"]::-webkit-inner-spin-button,
+		input[type="number"]::-webkit-outer-spin-button {
+			-webkit-appearance: none;
+			margin: 0;
+		}
+		input[type="number"] {
+			-moz-appearance: textfield; /* Firefox */
+		}
+		
+		input[type="number"], input[type="text"] {
+			border: 1px solid black;
+			border-radius: 6px;
+			padding:3px;
+			float: right;
+			background-color: #dbdbdb;
+		}
+		
+		button {
+			background-color: #355b94;
+			border: none;
+			border-radius: 6px;
+			color: white;
+			padding: 12px 24px;
+			text-align: center;
+			text-decoration: none;
+			display: inline-block;
+			font-size: 24px;
+		}
+		button:hover {
+			background-color: #2f538a;
+		}
+		#cropRight, #cropBottom {
+			padding-left: 100px;
+			text-align: left;
+		}
+    </style>
+</head>
+
+<body>
+    <div class="left-panel">
+        <div class="input-group">
+            <label for="canvasWidth">Enter OBS canvas width:</label>
+            <input type="number" id="canvasWidth" value="1920">
+        </div>
+        <div class="input-group">
+            <label for="canvasHeight">Enter OBS canvas height:</label>
+            <input type="number" id="canvasHeight" value="1080">
+        </div>
+        <div class="input-group">
+            <label for="colour1">Enter first colour:</label>
+            <input type="text" id="colour1" placeholder="Hex code">
+        </div>
+        <div class="input-group">
+            <label for="colour2">Enter second colour:</label>
+            <input type="text" id="colour2" placeholder="Hex code">
+        </div>
+        <div class="input-group">
+            <label for="colourText">Enter text colour:</label>
+            <input type="text" id="colourText" placeholder="Hex code">
+        </div>
+        <div class="input-group">
+            <label for="pixelCount">Enter number of pixels:</label>
+            <input type="number" id="pixelCount" value="9">
+        </div>
+        <div class="input-group">
+            <label for="opacity">Enter pixel opacity:</label>
+            <input type="number" id="opacity" placeholder="0-100" value="100">
+        </div>
+        <button onclick="generateImage()">Generate Image</button>
+        <button id="downloadBtn" onclick="downloadImage()" disabled="true">Download Image</button>
+		<div class="transform">
+		Transform Settings:<br><br>
+		<span id="cropLeft">Left: </span> <span id="cropRight">Right: </span><br><br>
+		<span id="cropTop">Top: </span> <span id="cropBottom">Bottom: </span><br>
+		</div>
+	</div>
+    <div class="right-panel">
+        <canvas id="canvas"></canvas>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>
