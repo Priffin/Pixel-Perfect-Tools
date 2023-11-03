@@ -11,9 +11,9 @@
             display: flex;
             height: 100vh;
             margin: 0;
-            background-color: #343541;
+            background-color: #24252e;
             color: white;
-            font-size: 2em;
+            font-size: 24px;
             align-items: center;
             justify-content: center;
         }
@@ -80,6 +80,28 @@
 			color: green;
 			font-size: 0.5em;
 		}
+		button {
+			background-color: #355b94;
+			border: none;
+			border-radius: 6px;
+			color: white;
+			padding: 12px 24px;
+			text-align: center;
+			text-decoration: none;
+			display: inline-block;
+			font-size: 24px;
+		}
+		button:hover {
+			background-color: #2f538a;
+		}
+		.menu {
+			position: absolute;
+			bottom: 0;
+			right: 0;
+		}
+		#currentPage {
+			background-color: #2f538a;
+		}
     </style>
 </head>
 
@@ -116,6 +138,10 @@
             <label>Estimated pixel skipping:</label>
             <output id="pixelSkipping">0</output>
         </div>
+		<div class="menu">
+			<button id="currentPage" onclick="window.location.href='calc.html'">Sens Calc</button>
+			<button onclick="window.location.href='overlayGen.html'">Overlay Gen</button>
+		</div>
     </div>
 
     <script>
