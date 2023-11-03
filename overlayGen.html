@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image Generator</title>
+    <title>Overlay Generator</title>
     <style>
         body {
 			font-family: Arial, sans-serif;
@@ -79,6 +79,16 @@
 			padding-left: 100px;
 			text-align: left;
 		}
+		
+		.menu {
+			position: absolute;
+			bottom: 0;
+			right: 0;
+		}
+		
+		#currentPage {
+			background-color: #2f538a;
+		}
     </style>
 </head>
 
@@ -122,8 +132,12 @@
 	</div>
     <div class="right-panel">
         <canvas id="canvas"></canvas>
+		<div class="menu">
+			<button onclick="window.location.href='calc.html'">Sens Calc</button>
+			<button id="currentPage" onclick="window.location.href=window.location.href">Overlay Gen</button>
+		</div>
     </div>
-    <script src="script.js"></script>
+    <script src="genScript.js"></script>
 </body>
 
 </html>
