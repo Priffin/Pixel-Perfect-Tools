@@ -217,6 +217,7 @@
 					}
 				}
 				for (let i = 0; i < 905; i++) {
+					d = newSens - noErrorSens[0]
 					d1 = newSens - noErrorSens[i];
 					d2 = newSens - noErrorSens[i + 1];
 					if (d1 * d2 < 0) {
@@ -230,8 +231,10 @@
                         "<span class='d2'> (+" +
                         -d2.toPrecision(1) +
                         ")</span>";
-                    break;
 						break;
+					}
+					else {
+					    newSens = noErrorSens[0].toString()
 					}
 				}
 			}
