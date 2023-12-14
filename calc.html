@@ -217,9 +217,12 @@
 					}
 				}
 				for (let i = 0; i < 905; i++) {
-					d = newSens - noErrorSens[0]
 					d1 = newSens - noErrorSens[i];
 					d2 = newSens - noErrorSens[i + 1];
+					if (newSens < noErrorSens[0]) {
+						newSens = noErrorSens[0];
+						break; 
+					}
 					if (d1 * d2 < 0) {
 						newSens =
                         "<br>" +
@@ -232,9 +235,6 @@
                         -d2.toPrecision(1) +
                         ")</span>";
 						break;
-					}
-					else {
-					    newSens = noErrorSens[0].toString()
 					}
 				}
 			}
