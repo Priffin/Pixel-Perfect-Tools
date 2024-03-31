@@ -126,7 +126,7 @@
             <output id="newDPI"></output>
         </div>
         <div class="output-container">
-            <label>New Sensitivity:</label>
+            <label>Closest Sensitivites:</label>
             <output id="newSens"></output>
         </div>
         <div class="output-container">
@@ -156,33 +156,21 @@
 		const cursorSpeedMultipliers = [0.03125, 0.0625, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1, 1.25, 1.5, 1.75, 2, 2.25, 2.5, 2.75, 3, 3.25, 3.25, 3.5]
 
 		async function getSensFromList() {
-			try {
-				const response = await fetch('https://raw.githubusercontent.com/Sharpieman20/Scratchpad/master/No_Error_Angles.txt');
-				const data = await response.text();
+    try {
+      const response = await fetch('https://gist.githubusercontent.com/ExeRSolver/cd8e89256a5f51ee4e32ba9df2db748f/raw/84b704b7d8f0e5e17d364368d351ad3fa39bb3f3/boatEyeSensitivitiesv1_16.txt');
+      const data = await response.text();
 
-				// Split the data into lines
-				const lines = data.split('\n');
+      // Split the data into lines
+      const lines = data.split('\n');
 
-				// Filter out lines based on conditions
-				const filteredList = lines.slice(20).filter(line => {
-					const columns = line.trim().split(' ');
-
-					// Check conditions for the 3rd and 4th columns
-					const thirdColumn = parseFloat(columns[2]);
-					const fourthColumn = parseFloat(columns[3]);
-
-					return thirdColumn >= 0.01 && fourthColumn >= 260;
-				});
-
-				// Extract the first word from each line in the filtered list
-				const list = filteredList.map(line => line.trim().split(' ')[0]);
-
-				return list;
-			} catch (error) {
-				console.error('Error fetching the text file:', error);
-				return [];
-			}
-		}
+      // Get all lines except the first 5 and keep the first word on each line
+      const list = lines.slice(5).map(line => line.trim().split(' ')[0]);
+      return list;
+    } catch (error) {
+      console.error('Error fetching the text file:', error);
+      return [];
+    }
+  }
 
 
 		input2.addEventListener("input", function() {
@@ -218,47 +206,49 @@
 
 			if (inputValue1 > 0 && inputValue2 > 0) {
 				let noErrorSens = await getSensFromList();
-				console.log(noErrorSens)
 				let d1, d2;
 
 				for (let i = 0; i < 20; i++) {
 					newDPI = inputValue1 / (cursorSpeedMultipliers[i] / cursorSpeedMultipliers[sliderValue - 1]);
 					const originalSensMultiplier = ((inputValue2 * 0.6 + 0.2) ** 3) * 8;
 					const newSensMultiplier = originalSensMultiplier * (cursorSpeedMultipliers[i] / cursorSpeedMultipliers[sliderValue - 1]);
-					pixelSkipping = (16384 * newSensMultiplier * 0.15) / 30;
 					newSens = (((newSensMultiplier / 8) ** (1 / 3)) - 0.2) / 0.6;
 					newCursorSpeed = i + 1;
 					if (newSens > 0) {
 						break;
 					}
 				}
-				for (let i = 0; i < 430; i++) {
+				for (let i = 0; i < 853; i++) {
 					d1 = newSens - noErrorSens[i];
 					d2 = newSens - noErrorSens[i + 1];
 					if (newSens < noErrorSens[0]) {
+					  const minInc = 1.2*((0.2 + 0.6 * noErrorSens[0])**3)
+			      pixelSkipping = minInc / 0.00220031449588
 						newSens = noErrorSens[0];
 						break; 
 					}
+					if (newSens > noErrorSens[852]) {
+						const minInc = 1.2*((0.2 + 0.6 * noErrorSens[852])**3)
+			      pixelSkipping = minInc / 0.00220031449588
+						newSens = noErrorSens[852];
+						break; 
+					}			
 					if (d1 * d2 < 0) {
-						newSens =
-                        "<br>" +
-                        noErrorSens[i].toString() +
-                        "<span class='d1'> (" +
-                        -d1.toPrecision(1) +
-                        ")</span><br> or <br>" +
-                        noErrorSens[i + 1].toString() +
-                        "<span class='d2'> (+" +
-                        -d2.toPrecision(1) +
-                        ")</span>";
+						const minInc = 1.2*((0.2 + 0.6 * noErrorSens[i])**3)
+			      pixelSkipping = minInc / 0.00220031449588
+						newSens = "<br>"+ noErrorSens[i].toString() + " or " + noErrorSens[i + 1].toString();
 						break;
 					}
+
 				}
 			}
+			
+
 
 			newDPIOutput.textContent = newDPI ? newDPI.toFixed(0) : "";
 			newSensOutput.innerHTML = newSens ? newSens : "";
 			newCursorSpeedOutput.textContent = newCursorSpeed ? newCursorSpeed.toFixed(0) : "";
-			pixelSkippingOutput.textContent = pixelSkipping ? pixelSkipping.toFixed(0) : "";
+			pixelSkippingOutput.textContent = pixelSkipping ? pixelSkipping.toFixed(1) : "";
 		}
 
         input1.addEventListener("input", updateOutputs);
